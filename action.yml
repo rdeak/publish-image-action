@@ -26,8 +26,8 @@ runs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
-        context: ${{ input.context }}
-        platforms: ${{ input.platforms }}
+        context: ${{ inputs.context }}
+        platforms: ${{ inputs.platforms }}
         push: true
         tags: ${{ inputs.aws_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.aws_ecr_name }}:${{ inputs.release_tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
