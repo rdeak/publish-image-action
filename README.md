@@ -1,17 +1,19 @@
 # Publish image action
 
-This GitHub Action sets up the environment to build and push Docker images to Amazon ECR. 
-It automates the process of setting up QEMU, Docker Buildx, caching Docker layers, configuring AWS credentials, and performing Docker operations.
+This GitHub Action sets up the environment to build and push Docker images to Amazon ECR.
+It automates the process of setting up QEMU, Docker Buildx, caching Docker layers, configuring AWS credentials, and
+performing Docker operations.
 
 ## Inputs
 
-| Name                  | Description                                        | Required |
-|-----------------------|----------------------------------------------------|----------|
-| `release_tag`         | The release tag to apply to the Docker image.      | `true`   |
-| `aws_account_id`      | AWS account ID where the ECR repository is hosted. | `true`   |
-| `aws_role_name`       | AWS role name to assume for authentication.        | `true`   |
-| `aws_region`          | AWS region where the ECR repository is located.    | `true`   |
-| `aws_ecr_name`        | Name of the ECR repository.                        | `true`   |
+| Name             | Description                                        | Required |
+|------------------|----------------------------------------------------|----------|
+| `release_tag`    | The release tag to apply to the Docker image.      | `true`   |
+| `aws_account_id` | AWS account ID where the ECR repository is hosted. | `true`   |
+| `aws_region`     | AWS region where the ECR repository is located.    | `true`   |
+| `aws_ecr_name`   | Name of the ECR repository.                        | `true`   |
+| `context`        | Docker build context.                              | `false`  |
+| `platforms`      | Target platforms for build.                        | `false`  |
 
 ## Example usage
 
@@ -32,9 +34,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/${{ inputs.aws_role_name }}
+          aws-region: ${{ inputs.aws_region }}
       - name: Build and publish docker image
-        uses:  rdeak/publish-image-action@v1
+        uses: rdeak/publish-image-action@v1
         with:
           release_tag: ${{ github.ref_name }}
           aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -42,7 +48,6 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           aws_ecr_name: ${{ secrets.AWS_ECR_NAME }}
 ```
-
 
 ## License
 
